@@ -64,6 +64,7 @@ osThreadId defaultTaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
 void StartDefaultTask(void const * argument);
 
 /* USER CODE BEGIN PFP */
@@ -99,6 +100,7 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
+  MX_GPIO_Init();
 
   /* USER CODE BEGIN 2 */
 
@@ -193,6 +195,33 @@ void SystemClock_Config(void)
   HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);
 }
 
+/** Configure pins as 
+        * Analog 
+        * Input 
+        * Output
+        * EVENT_OUT
+        * EXTI
+*/
+static void MX_GPIO_Init(void)
+{
+
+  GPIO_InitTypeDef GPIO_InitStruct;
+
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOE_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_4|GPIO_PIN_1, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : PE4 PE1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+}
+
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
@@ -206,6 +235,10 @@ void StartDefaultTask(void const * argument)
   for(;;)
   {
     osDelay(1);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_1);
+	osDelay(250);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_4);
+	osDelay(250);
   }
   /* USER CODE END 5 */ 
 }
